@@ -1,9 +1,15 @@
-slf4net - Simple Logging Facade for .Net
+Simple Logging Facade for .Net (slf4net)
 ========
 
-The slf4net project provides an abstraction layer for various logging frameworks inspired by the Java slf4j package.
+The slf4net project serves as a light weight abstraction layer for various logging frameworks such as log4net and NLog.  This allows the end user to plug in the desired logging framework at deployment time.
 
 
+This project was inspired by the [Java slf4j project](http://www.slf4j.org/) (which it tries to follow as closely as possible) and an earlier [.Net slf project](http://slf.codeplex.com/).
+
+
+Configuration
+-------------
+See the [configuration wiki page](https://github.com/englishtown/slf4net/wiki/Configuration).
 
 
 Installing slf4net
@@ -14,4 +20,4 @@ Find slf4net on nuget.org: http://nuget.org/packages?q=slf4net
 
 License terms
 -------------
-slf4net is published under the MIT license.
+slf4net is published under the [MIT license](http://englishtown.mit-license.org).
