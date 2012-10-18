@@ -1,0 +1,28 @@
+# git ignore file
+Thumbs.db
+*.obj
+*.exe
+*.pdb
+*.vspscc
+*.suo
+*.bak
+*.log
+[Bb]in
+[Dd]ebug*/
+obj/
+[Rr]elease*/
+_ReSharper*/
+[Tt]est[Rr]esults*
+*.vssscc
+*.tmp
+
+# NuGet files to exclude
+packages/
+*.nupkg
+!NuGet.exe
+
+# NCrunch files to exclude
+*.ncrunchsolution
+*.ncrunchproject
+*.cache
+*.user
