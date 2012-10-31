@@ -18,4 +18,8 @@
       <dependency id="slf4net" version="0.1"/>
     </dependencies>
   </metadata>
+  <files>
+    <file src="app.config.transform" target="content\app.config.transform" />
+    <file src="web.config.transform" target="content\web.config.transform" />
+  </files>
 </package>
