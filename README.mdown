@@ -7,15 +7,44 @@ The slf4net project serves as a light weight abstraction layer for various loggi
 This project was inspired by the [Java slf4j project](http://www.slf4j.org/) (which it tries to follow as closely as possible) and an earlier [.Net slf project](http://slf.codeplex.com/).
 
 
+Installing slf4net
+-------------------
+Find slf4net on nuget.org: http://nuget.org/packages?q=slf4net
+
+When deploying your application, choose either the slf4net.log4net or slf4net.NLog package, or create your own wrapper for your favourite logging framework.
+
+
 Configuration
 -------------
 See the [configuration wiki page](https://github.com/englishtown/slf4net/wiki/Configuration).
 
 
-Installing slf4net
--------------------
-Find slf4net on nuget.org: http://nuget.org/packages?q=slf4net
+Getting started
+----------------
+Intall the slf4net nuget package to your project.  If a logger factory is not configured, a NOPLogger (no operation logger) will be used.  Start logging.
 
+```c#
+using System;
+
+namespace slf4net.Samples
+{
+    public class MyClass
+    {
+
+        private static readonly slf4net.ILogger _logger = slf4net.LoggerFactory.GetLogger(typeof(MyClass));
+
+        public void Foo()
+        {
+            _logger.Trace("Foo started at {0}.", DateTime.Now);
+
+            // Do some work
+
+            _logger.Trace("Foo() completed at {0}.", DateTime.Now);
+        }
+
+    }
+}
+```
 
 
 License terms
