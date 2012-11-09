@@ -22,6 +22,7 @@ packages/
 !NuGet.exe
 
 # NCrunch files to exclude
+_NCrunch_*/
 *.ncrunchsolution
 *.ncrunchproject
 *.cache
