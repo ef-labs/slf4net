@@ -184,7 +184,11 @@ namespace slf4net
             {
                 if (_factoryResolver == null)
                 {
+#if PocketPC
+                    _factoryResolver = new XmlFactoryResolver();
+#else
                     _factoryResolver = new AppConfigFactoryResolver();
+#endif
                 }
 
                 var factory = _factoryResolver.GetFactory();
@@ -192,33 +196,44 @@ namespace slf4net
                 if (factory == null)
                 {
                     _initializationState = InitializationState.NOP_Fallback;
+#if !PocketPC
                     EmitFactoryResolverError(_factoryResolver);
+#endif
                     return;
                 }
 
                 _initializationState = InitializationState.Initialized;
+#if !PocketPC
                 EmitSubstituteLoggerWarning();
+#endif
 
             }
+#if PocketPC
+            catch
+#else
             catch (Exception ex)
+#endif
             {
                 _initializationState = InitializationState.NOP_Fallback;
-
+#if !PocketPC
                 try
                 {
                     EventLogHelper.WriteEntry("Error initializing LoggerFactory.  Defaulting to no-operation (NOP) logger implementation.", ex);
                 }
                 catch { }
+#endif
             }
 
         }
 
+ #if !PocketPC       
         private static void EmitFactoryResolverError(IFactoryResolver resolver)
         {
             var msg = "The factory resolver " + resolver.GetType().Name
                 + " returned null from GetFactory().  The fallback no operation logger factory will be used instead.";
 
             EventLogHelper.WriteEntry(msg, null);
+
         }
 
         private static void EmitSubstituteLoggerWarning()
@@ -235,9 +250,10 @@ namespace slf4net
 
             EventLogHelper.WriteEntry(msg, null);
 
-        }
 
-        #endregion
+        }
+#endif
+#endregion
 
     }
 }

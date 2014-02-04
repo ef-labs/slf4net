@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using log4net.Config;
 using System.IO;
 using System.Xml;
+using System.Reflection;
 
 namespace slf4net.log4net
 {
     internal class XmlConfiguratorHelper
     {
-
         private const string CONFIG_FILE = "configFile";
         private const string WATCH = "watch";
         private const string VALUE = "value";
@@ -56,13 +55,12 @@ namespace slf4net.log4net
                     }
                 }
             }
-
         }
 
         public void Configure()
         {
             FileInfo fileInfo;
-
+#if !PocketPC
             if (string.IsNullOrEmpty(_configFile))
             {
                 fileInfo = new FileInfo(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
@@ -70,7 +68,11 @@ namespace slf4net.log4net
             else
             {
                 var fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _configFile);
+#else
+                var fileName = Path.Combine(Path.GetDirectoryName(Assembly.GetCallingAssembly().GetName().CodeBase), _configFile);
+#endif
                 fileInfo = new FileInfo(fileName);
+#if !PocketPC
             }
 
             bool watch;
@@ -81,10 +83,11 @@ namespace slf4net.log4net
             }
             else
             {
+#endif
                 XmlConfigurator.Configure(fileInfo);
+#if !PocketPC
             }
+#endif
         }
-
-
     }
 }

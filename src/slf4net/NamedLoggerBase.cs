@@ -19,8 +19,9 @@
 //OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //THE SOFTWARE.
 
-
+#if !PocketPC
 using System.Runtime.Serialization;
+#endif
 using System;
 
 namespace slf4net
@@ -29,9 +30,12 @@ namespace slf4net
     /// Serves as base class for named logger implementations providing serialization capabilities.
     /// </summary>
     [Serializable]
+#if PocketPC
+    public abstract class NamedLoggerBase
+#else
     public abstract class NamedLoggerBase : ISerializable
+#endif
     {
-
         private const string SERIALIZATION_INFO_NAME = "name";
 
         #region Constructors
@@ -63,7 +67,7 @@ namespace slf4net
         public string Name { get; protected set; }
 
         #endregion
-
+#if !PocketPC
         #region ISerializable
 
         /// <summary>
@@ -109,6 +113,6 @@ namespace slf4net
         }
 
         #endregion
-
+#endif
     }
 }

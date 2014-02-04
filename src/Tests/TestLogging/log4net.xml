@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<log4net>
+  <appender name="RollingLogFileAppender" type="log4net.Appender.RollingFileAppender">
+    <file type="log4net.Util.PatternString" value="\Application Data\Trilliant\TestLogging\Logs\log.txt" />
+    <PreserveLogFileNameExtension value="true" />
+    <appendToFile value="true" />
+    <rollingStyle value="Date" />
+    <datePattern value="yyyy-MM-dd" />
+    <layout type="log4net.Layout.PatternLayout">
+      <conversionPattern value="%date [%thread] %-5level %logger - %message%newline" />
+    </layout>
+  </appender>
+ 
+  <!-- Set root logger level to DEBUG and its only appender to A1 -->
+  <root>
+    <level value="DEBUG" />
+    <appender-ref ref="RollingLogFileAppender" />
+  </root>
+
+  <!-- Print only messages of level WARN or above in the package Com.Foo -->
+  <!--<logger name="Com.Foo">
+    <level value="WARN" />
+  </logger>-->
+</log4net>

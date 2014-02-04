@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<slf4net>
+	<factory type="slf4net.log4net.Log4netLoggerFactory, slf4net.log4net">
+		<factory-data>
+			<configFile value="log4net.xml"/>
+			<watch value="false"/>
+		</factory-data>
+	</factory>
+</slf4net>

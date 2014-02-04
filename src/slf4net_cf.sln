@@ -1,0 +1,42 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "slf4net_cf", "slf4net\slf4net_cf.csproj", "{AF67C2F7-9540-4817-8F81-17665B689336}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "slf4net.log4net_cf", "slf4net.log4net\slf4net.log4net_cf.csproj", "{1F8642C5-9C19-4C6F-A8AA-819BB664077C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestLogging", "Tests\TestLogging\TestLogging.csproj", "{EB543A9A-F11D-4940-9B21-1895EEDE6C5C}"
+EndProject
+Global
+	GlobalSection(SubversionScc) = preSolution
+		Svn-Managed = True
+		Manager = AnkhSVN - Subversion Support for Visual Studio
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AF67C2F7-9540-4817-8F81-17665B689336}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AF67C2F7-9540-4817-8F81-17665B689336}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AF67C2F7-9540-4817-8F81-17665B689336}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{AF67C2F7-9540-4817-8F81-17665B689336}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AF67C2F7-9540-4817-8F81-17665B689336}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AF67C2F7-9540-4817-8F81-17665B689336}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{1F8642C5-9C19-4C6F-A8AA-819BB664077C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F8642C5-9C19-4C6F-A8AA-819BB664077C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F8642C5-9C19-4C6F-A8AA-819BB664077C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{1F8642C5-9C19-4C6F-A8AA-819BB664077C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F8642C5-9C19-4C6F-A8AA-819BB664077C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F8642C5-9C19-4C6F-A8AA-819BB664077C}.Release|Any CPU.Deploy.0 = Release|Any CPU
+		{EB543A9A-F11D-4940-9B21-1895EEDE6C5C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB543A9A-F11D-4940-9B21-1895EEDE6C5C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB543A9A-F11D-4940-9B21-1895EEDE6C5C}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{EB543A9A-F11D-4940-9B21-1895EEDE6C5C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB543A9A-F11D-4940-9B21-1895EEDE6C5C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB543A9A-F11D-4940-9B21-1895EEDE6C5C}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

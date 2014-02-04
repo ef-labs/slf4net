@@ -21,14 +21,13 @@
 
 
 using System.Collections.Generic;
-using System.Linq;
 
 namespace slf4net.Factories
 {
     internal class SubstituteLoggerFactory : ILoggerFactory
     {
 
-        private IList<string> _loggerNameList = new List<string>();
+        private List<string> _loggerNameList = new List<string>();
 
         public ILogger GetLogger(string name)
         {

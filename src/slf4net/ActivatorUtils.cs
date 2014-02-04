@@ -38,7 +38,7 @@ namespace slf4net
         /// <returns></returns>
         internal static T Instantiate<T>(string typeName) where T : class
         {
-            Type type = Type.GetType(typeName, throwOnError: true, ignoreCase: false);
+            Type type = Type.GetType(typeName, true, false);
             T obj = Activator.CreateInstance(type) as T;
 
             if (obj == null)
