@@ -21,7 +21,7 @@
 
 
 using log4net;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using Moq;
 using slf4net.log4net;
 using Core = log4net.Core;
@@ -34,64 +34,13 @@ namespace slf4net.Tests
     ///This is a test class for Log4netLoggerAdapterTest and is intended
     ///to contain all Log4netLoggerAdapterTest Unit Tests
     ///</summary>
-    [TestClass()]
+    [TestFixture]
     public class Log4netLoggerAdapterTest
     {
-
-
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-
         /// <summary>
         ///A test for Log4netLoggerAdapter Constructor
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void Log4netLoggerAdapter_Test()
         {
             var log = new Mock<Core.ILogger>();

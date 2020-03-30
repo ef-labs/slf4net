@@ -1,25 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using log4net.Config;
 using System.IO;
 using System.Xml;
+using System.Xml.Linq;
+using log4net.Core;
+using log4net.Repository;
+using slf4net.Internal;
+using slf4net.log4net.Internal;
 
 namespace slf4net.log4net
 {
     internal class XmlConfiguratorHelper
     {
-
         private const string CONFIG_FILE = "configFile";
         private const string WATCH = "watch";
         private const string VALUE = "value";
 
-        private string _configFile;
-        private string _watch;
+        private readonly IXmlConfigurator _configurator;
+        private readonly IList<string> _configFiles = new List<string>();
+        private bool _watch;
 
-        public XmlConfiguratorHelper(string factoryData)
+        private static readonly ILoggerRepository _repository =
+            LoggerManager.CreateRepository(Log4netLoggerFactory.SLF4NET_REPOSITORY);
+
+
+        public XmlConfiguratorHelper(string factoryData, IXmlConfigurator configurator)
         {
+            _configurator = configurator;
             if (string.IsNullOrEmpty(factoryData))
             {
                 return;
@@ -39,52 +46,121 @@ namespace slf4net.log4net
                 {
                     if (xr.NodeType == XmlNodeType.Element)
                     {
-                        if (xr.Name == CONFIG_FILE)
+                        switch (xr.Name)
                         {
-                            if (xr.MoveToAttribute(VALUE))
+                            case CONFIG_FILE:
                             {
-                                _configFile = xr.Value;
+                                if (xr.MoveToAttribute(VALUE) && !string.IsNullOrEmpty(xr.Value))
+                                {
+                                    _configFiles.Add(xr.Value);
+                                }
+
+                                break;
                             }
-                        }
-                        else if (xr.Name == WATCH)
-                        {
-                            if (xr.MoveToAttribute(VALUE))
+                            case WATCH:
                             {
-                                _watch = xr.Value;
+                                if (xr.MoveToAttribute(VALUE))
+                                {
+                                    if (bool.TryParse(xr.Value, out var value))
+                                    {
+                                        _watch = value;
+                                    }
+                                }
+
+                                break;
                             }
                         }
                     }
                 }
             }
-
         }
 
         public void Configure()
         {
-            FileInfo fileInfo;
+            var files = new List<FileInfo>();
 
-            if (string.IsNullOrEmpty(_configFile))
+            foreach (var configFile in _configFiles)
             {
-                fileInfo = new FileInfo(AppDomain.CurrentDomain.SetupInformation.ConfigurationFile);
-            }
-            else
-            {
-                var fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, _configFile);
-                fileInfo = new FileInfo(fileName);
+                var fileName = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, configFile);
+                var file = new FileInfo(fileName);
+
+                if (file.Exists)
+                {
+                    files.Add(file);
+                }
+                else
+                {
+                    ConsoleHelper.WriteLine($"log4net config file {configFile} does not exist");
+                }
             }
 
-            bool watch;
-
-            if (bool.TryParse(_watch, out watch) && watch)
+            switch (files.Count)
             {
-                XmlConfigurator.ConfigureAndWatch(fileInfo);
-            }
-            else
-            {
-                XmlConfigurator.Configure(fileInfo);
+                case 0:
+                    _configurator.Configure(_repository);
+                    break;
+                case 1:
+                {
+                    ConfigureOne(files[0]);
+                    break;
+                }
+                default:
+                {
+                    ConfigureMulti(files);
+                    break;
+                }
             }
         }
 
+        private void ConfigureOne(FileInfo file)
+        {
+            if (_watch)
+            {
+                _configurator.ConfigureAndWatch(_repository, file);
+            }
+            else
+            {
+                _configurator.Configure(_repository, file);
+            }
+        }
 
+        private void ConfigureMulti(IEnumerable<FileInfo> files)
+        {
+            // Need to combine multiple files
+            XElement root = null;
+            var name = "log4net";
+
+            foreach (var file in files)
+            {
+                var doc = XDocument.Load(file.FullName);
+                var element = doc.Element(name);
+
+                if (element == null)
+                {
+                    ConsoleHelper.WriteLine($"log4net config file {file.FullName} missing root {name} element");
+                    continue;
+                }
+
+                if (root == null)
+                {
+                    root = element;
+                }
+                else
+                {
+                    root.Add(element.Nodes());
+                }
+            }
+
+            if (root == null)
+            {
+                _configurator.Configure(_repository);
+            }
+            else
+            {
+                XmlDocument doc = new XmlDocument();
+                XmlElement node = doc.ReadNode(root.CreateReader()) as XmlElement;
+                _configurator.Configure(_repository, node);
+            }
+        }
     }
 }

@@ -21,10 +21,10 @@
 
 
 using System.Collections.Generic;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using slf4net.Factories;
+using NUnit.Framework;
+using slf4net.Factories.Internal;
 
-namespace slf4net.Tests.Factories
+namespace slf4net.Tests.Factories.Internal
 {
     
     
@@ -32,64 +32,13 @@ namespace slf4net.Tests.Factories
     ///This is a test class for SubstituteLoggerFactoryTest and is intended
     ///to contain all SubstituteLoggerFactoryTest Unit Tests
     ///</summary>
-    [TestClass()]
+    [TestFixture]
     public class SubstituteLoggerFactoryTest
     {
-
-
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-
         /// <summary>
         ///A test for GetLogger
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void Factories_SubstituteLoggerFactory_GetLoggerTest()
         {
             SubstituteLoggerFactory target = new SubstituteLoggerFactory();
@@ -105,7 +54,7 @@ namespace slf4net.Tests.Factories
         /// <summary>
         ///A test for GetLoggerNameList
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void Factories_SubstituteLoggerFactory_GetLoggerNameListTest()
         {
             SubstituteLoggerFactory target = new SubstituteLoggerFactory();

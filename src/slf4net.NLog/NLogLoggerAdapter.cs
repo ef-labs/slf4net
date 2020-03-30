@@ -21,6 +21,7 @@
 
 
 using System;
+using System.Globalization;
 using NLog;
 
 namespace slf4net.NLog
@@ -46,7 +47,7 @@ namespace slf4net.NLog
         /// by wrapping a NLog logger
         /// </summary>
         /// <param name="logger">The NLog logger to wrap</param>
-        internal NLogLoggerAdapter(Logger logger)
+        public NLogLoggerAdapter(Logger logger)
         {
             _logger = logger;
             _wrapperType = this.GetType();
@@ -57,6 +58,7 @@ namespace slf4net.NLog
 
         #region Debug
 
+        /// <inheritdoc />
         public bool IsDebugEnabled { get { return _logger.IsDebugEnabled; } }
 
         /// <summary>
@@ -137,6 +139,7 @@ namespace slf4net.NLog
 
         #region Trace
 
+        /// <inheritdoc />
         public bool IsTraceEnabled { get { return _logger.IsTraceEnabled; } }
 
         /// <summary>
@@ -217,6 +220,7 @@ namespace slf4net.NLog
 
         #region Info
 
+        /// <inheritdoc />
         public bool IsInfoEnabled { get { return _logger.IsInfoEnabled; } }
 
         /// <summary>
@@ -297,6 +301,7 @@ namespace slf4net.NLog
 
         #region Warn
 
+        /// <inheritdoc />
         public bool IsWarnEnabled { get { return _logger.IsWarnEnabled; } }
 
         /// <summary>
@@ -377,6 +382,7 @@ namespace slf4net.NLog
 
         #region Error
 
+        /// <inheritdoc />
         public bool IsErrorEnabled { get { return _logger.IsErrorEnabled; } }
 
         /// <summary>
@@ -470,7 +476,7 @@ namespace slf4net.NLog
         {
             if (_logger.IsEnabled(level))
             {
-                var le = LogEventInfo.Create(level, this.Name, message, exception);
+                var le = LogEventInfo.Create(level, this.Name, exception, CultureInfo.InvariantCulture, message);
                 _logger.Log(_wrapperType, le);
             }
         }
