@@ -22,7 +22,8 @@
 
 using System;
 using System.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
+using slf4net.Internal;
 
 namespace slf4net.Tests
 {
@@ -32,77 +33,38 @@ namespace slf4net.Tests
     ///This is a test class for EventLogHelperTest and is intended
     ///to contain all EventLogHelperTest Unit Tests
     ///</summary>
-    [TestClass()]
+    [TestFixture]
     public class EventLogHelperTest
     {
-
-
-        private TestContext testContextInstance;
-
         /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
+        ///A test for WriteEntry
         ///</summary>
-        public TestContext TestContext
+        [Test]
+        public void EventLogHelper_WriteEntry()
         {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
+            string message = "Test message";
+
+            ConsoleHelper.WriteLine(message);
+
         }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
 
         /// <summary>
         ///A test for WriteEntry
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void EventLogHelper_WriteEntry_NoException()
         {
             string message = "Test message";
             Exception ex = null;
 
-            EventLogHelper.WriteEntry(message, ex);
+            ConsoleHelper.WriteLine(message, ex);
 
         }
 
         /// <summary>
         ///A test for WriteEntry
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void EventLogHelper_WriteEntry_WithException()
         {
             string message = "Test message";
@@ -113,7 +75,7 @@ namespace slf4net.Tests
             }
             catch (Exception ex)
             {
-                EventLogHelper.WriteEntry(message, ex);
+                ConsoleHelper.WriteLine(message, ex);
             }
 
         }

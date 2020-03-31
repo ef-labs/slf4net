@@ -15,8 +15,10 @@ _ReSharper*/
 [Tt]est[Rr]esults*
 *.vssscc
 *.tmp
+*.userprefs
 
 # NuGet files to exclude
+nuget/
 packages/
 *.nupkg
 !NuGet.exe
@@ -27,3 +29,6 @@ _NCrunch_*/
 *.ncrunchproject
 *.cache
 *.user
+
+# NUnit files to exclude
+TestResult.xml

@@ -1,8 +1,8 @@
 //The MIT License (MIT)
-//Copyright © 2012 Englishtown <opensource@englishtown.com>
+//Copyright ¬© 2012 Englishtown <opensource@englishtown.com>
 
 //Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the ìSoftwareî), to deal
+//of this software and associated documentation files (the ‚ÄúSoftware‚Äù), to deal
 //in the Software without restriction, including without limitation the rights
 //to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 //copies of the Software, and to permit persons to whom the Software is
@@ -11,7 +11,7 @@
 //The above copyright notice and this permission notice shall be included in
 //all copies or substantial portions of the Software.
 
-//THE SOFTWARE IS PROVIDED ìAS ISî, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//THE SOFTWARE IS PROVIDED ‚ÄúAS IS‚Äù, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 //IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 //FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 //AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
@@ -22,6 +22,7 @@
 
 using log4net;
 using slf4net.Factories;
+using slf4net.log4net.Internal;
 
 namespace slf4net.log4net
 {
@@ -33,22 +34,45 @@ namespace slf4net.log4net
     /// </summary>
     public class Log4netLoggerFactory : NamedLoggerFactoryBase, IConfigurableLoggerFactory
     {
-
+        private readonly IXmlConfigurator _configurator;
         private static bool _isInitialized = false;
         private static readonly object _locker = new object();
 
+        /// <summary>
+        /// The slf4net repository name
+        /// </summary>
+        public static readonly string SLF4NET_REPOSITORY = "slf4net-repository";
+
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        public Log4netLoggerFactory() : this(new XmlConfiguratorWrapper())
+        {
+        }
+
+        /// <summary>
+        /// Injection constructor
+        /// </summary>
+        /// <param name="configurator"></param>
+        public Log4netLoggerFactory(IXmlConfigurator configurator)
+        {
+            _configurator = configurator;
+        }
+
+        /// <inheritdoc />
         protected override ILogger CreateLogger(string name)
         {
             EnsureInitialized();
-            var log4netLogger = LogManager.GetLogger(name);
+            var log4netLogger = LogManager.GetLogger(SLF4NET_REPOSITORY, name);
             return new Log4netLoggerAdapter(log4netLogger);
         }
 
+        /// <inheritdoc />
         public void Init(string factoryData)
         {
             lock (_locker)
             {
-                var helper = new XmlConfiguratorHelper(factoryData);
+                var helper = new XmlConfiguratorHelper(factoryData, _configurator);
                 helper.Configure();
                 _isInitialized = true;
             }

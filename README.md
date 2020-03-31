@@ -50,3 +50,21 @@ namespace slf4net.Samples
 License terms
 -------------
 slf4net is published under the [MIT license](http://englishtown.mit-license.org).
+
+
+Building
+-------------
+
+Rebuild and run tests:
+
+```bash
+msbuild -t:clean,rebuild,test -restore -p:Configuration=Release src/slf4net.sln
+```
+
+Package:
+
+```bash
+version=1.0.0-beta.1
+path=${PWD}/nuget
+msbuild -t:clean,rebuild,test,pack -restore -p:Configuration=Release,Version=${version},PackageOutputPath=${path} src/slf4net.sln
+```

@@ -5,24 +5,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{B90B0A41
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "slf4net", "slf4net\slf4net.csproj", "{F969A551-EE0E-4129-9E88-AC5291985589}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{AB1A257D-636B-49E2-80B1-66917D61825B}"
-	ProjectSection(SolutionItems) = preProject
-		Local.testsettings = Local.testsettings
-		slf4net.vsmdi = slf4net.vsmdi
-		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
-	EndProjectSection
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "slf4net.Moqs", "Tests\slf4net.Moqs\slf4net.Moqs.csproj", "{6554750C-D44D-47C9-81A6-9C0353C91E81}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "slf4net.Tests", "Tests\slf4net.Tests\slf4net.Tests.csproj", "{2AECA60D-4A10-433C-881A-ADE69E2A3DA1}"
-EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{A433C3DA-AB89-4559-897B-4B7EE1189F94}"
-	ProjectSection(SolutionItems) = preProject
-		.nuget\nuget pack.bat = .nuget\nuget pack.bat
-		.nuget\NuGet.Config = .nuget\NuGet.Config
-		.nuget\NuGet.exe = .nuget\NuGet.exe
-		.nuget\NuGet.targets = .nuget\NuGet.targets
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "slf4net.log4net", "slf4net.log4net\slf4net.log4net.csproj", "{67C30AFE-0952-4C45-B1BA-38EA1CBA6B42}"
 EndProject
@@ -31,6 +16,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "slf4net.log4net.Tests", "Tests\slf4net.log4net.Tests\slf4net.log4net.Tests.csproj", "{90B6EE59-950A-4E48-9235-F2A16A6B5AFE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "slf4net.NLog.Tests", "Tests\slf4net.NLog.Tests\slf4net.NLog.Tests.csproj", "{1ABB0B2B-1E3F-4BA4-8AD7-4763A16D8E00}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4D73B518-5798-4A3E-BB3C-63ADF6836943}"
+ProjectSection(SolutionItems) = preProject
+	..\.gitignore = ..\.gitignore
+	..\nuget-push.sh = ..\nuget-push.sh
+	..\README.md = ..\README.md
+	slf4net.targets = slf4net.targets
+EndProjectSection
 EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
@@ -74,7 +67,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{AB1A257D-636B-49E2-80B1-66917D61825B} = {B90B0A41-FF2A-4B90-A530-39AB7D0D456C}
 		{6554750C-D44D-47C9-81A6-9C0353C91E81} = {B90B0A41-FF2A-4B90-A530-39AB7D0D456C}
 		{2AECA60D-4A10-433C-881A-ADE69E2A3DA1} = {B90B0A41-FF2A-4B90-A530-39AB7D0D456C}
 		{90B6EE59-950A-4E48-9235-F2A16A6B5AFE} = {B90B0A41-FF2A-4B90-A530-39AB7D0D456C}

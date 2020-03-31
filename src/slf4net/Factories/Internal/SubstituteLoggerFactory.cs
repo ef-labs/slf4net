@@ -20,16 +20,41 @@
 //THE SOFTWARE.
 
 
-using System.Reflection;
+using System.Collections.Generic;
+using System.Linq;
 
-// General information about an assembly is controlled through the following 
-// set of attributes. Change these attribute values to modify the information
-// associated with an assembly.
+namespace slf4net.Factories.Internal
+{
+    /// <summary>
+    /// A temporary logger factory used during initialization
+    /// </summary>
+    public class SubstituteLoggerFactory : ILoggerFactory
+    {
 
-[assembly: AssemblyCompany("slf4net")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCopyright("Copyright © Englishtown 2012")]
-[assembly: AssemblyCulture("")]
-[assembly: AssemblyTrademark("")]
+        private IList<string> _loggerNameList = new List<string>();
 
+        /// <inheritdoc />
+        public ILogger GetLogger(string name)
+        {
+            lock (_loggerNameList)
+            {
+                _loggerNameList.Add(name);
+            }
 
+            return NOPLogger.Instance;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public string[] GetLoggerNameList()
+        {
+            lock (_loggerNameList)
+            {
+                return _loggerNameList.ToArray();
+            }
+        }
+
+    }
+}

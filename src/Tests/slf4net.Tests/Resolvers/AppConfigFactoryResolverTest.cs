@@ -22,76 +22,23 @@
 
 using System;
 using System.Configuration;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using slf4net.Moqs.Factories;
 using slf4net.Resolvers;
 
 namespace slf4net.Tests
 {
-
-
     /// <summary>
     ///This is a test class for AppConfigFactoryResolverTest and is intended
     ///to contain all AppConfigFactoryResolverTest Unit Tests
     ///</summary>
-    [TestClass()]
+    [TestFixture]
     public class AppConfigFactoryResolverTest
     {
-
-
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
-        {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
-        }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
-
         /// <summary>
         ///A test for AppConfigFactoryResolver Constructor
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void Resolvers_AppConfigFactoryResolver_MissingSection()
         {
             AppConfigFactoryResolver target = new AppConfigFactoryResolver();
@@ -103,84 +50,108 @@ namespace slf4net.Tests
         /// <summary>
         ///A test for AppConfigFactoryResolver Constructor
         ///</summary>
-        [TestMethod()]
-        [ExpectedException(typeof(ConfigurationErrorsException))]
+        [Test]
         public void Resolvers_AppConfigFactoryResolver_InvalidSection()
         {
-            AppConfigFactoryResolver target = new AppConfigFactoryResolver("slf4net-wrong-type");
-            Assert.Fail();
+            try
+            {
+                AppConfigFactoryResolver target = new AppConfigFactoryResolver("slf4net-wrong-type");
+                Assert.Fail();
+            }
+            catch (ConfigurationErrorsException)
+            {
+                // Expected
+            }
         }
 
         /// <summary>
         ///A test for AppConfigFactoryResolver Constructor
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void Resolvers_AppConfigFactoryResolver_AltSectionName1()
         {
             AppConfigFactoryResolver target = new AppConfigFactoryResolver("slf4net-alt-name1");
 
             var factory = target.GetFactory();
             Assert.IsNotNull(factory);
-            Assert.IsInstanceOfType(factory, typeof(TestLoggerFactory));
+            Assert.IsInstanceOf<TestLoggerFactory>(factory);
         }
 
         /// <summary>
         ///A test for AppConfigFactoryResolver Constructor
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void Resolvers_AppConfigFactoryResolver_AltSectionName2()
         {
             AppConfigFactoryResolver target = new AppConfigFactoryResolver("slf4net-alt-name2");
 
             var factory = target.GetFactory();
             Assert.IsNotNull(factory);
-            Assert.IsInstanceOfType(factory, typeof(TestNamedLoggerFactory));
+            Assert.IsInstanceOf<TestNamedLoggerFactory>(factory);
         }
 
         /// <summary>
         ///A test for AppConfigFactoryResolver Constructor
         ///</summary>
-        [TestMethod()]
-        [ExpectedException(typeof(TypeLoadException))]
+        [Test]
         public void Resolvers_AppConfigFactoryResolver_InvalidType()
         {
-            AppConfigFactoryResolver target = new AppConfigFactoryResolver("slf4net-invalid");
-            Assert.Fail();
+            try
+            {
+                AppConfigFactoryResolver target = new AppConfigFactoryResolver("slf4net-invalid");
+                Assert.Fail();
+            }
+            catch (TypeLoadException)
+            {
+                // Expected
+            }
         }
 
         /// <summary>
         ///A test for AppConfigFactoryResolver Constructor
         ///</summary>
-        [TestMethod()]
-        [ExpectedException(typeof(TypeLoadException))]
+        [Test]
         public void Resolvers_AppConfigFactoryResolver_MissingType()
         {
-            AppConfigFactoryResolver target = new AppConfigFactoryResolver("slf4net-missing");
-            Assert.Fail();
+            try
+            {
+                AppConfigFactoryResolver target = new AppConfigFactoryResolver("slf4net-missing");
+                Assert.Fail();
+            }
+            catch (TypeLoadException)
+            {
+                // Expected
+            }
         }
 
         /// <summary>
         ///A test for AppConfigFactoryResolver Constructor
         ///</summary>
-        [TestMethod()]
-        [ExpectedException(typeof(InvalidCastException))]
+        [Test]
         public void Resolvers_AppConfigFactoryResolver_WrongType()
         {
-            AppConfigFactoryResolver target = new AppConfigFactoryResolver("slf4net-wrong-factory-type");
-            Assert.Fail();
+            try
+            {
+                AppConfigFactoryResolver target = new AppConfigFactoryResolver("slf4net-wrong-factory-type");
+                Assert.Fail();
+            }
+            catch (InvalidCastException)
+            {
+                // Expected
+            }
         }
 
         /// <summary>
         ///A test for AppConfigFactoryResolver Constructor
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void Resolvers_AppConfigFactoryResolver_ConfigurableFactory()
         {
             AppConfigFactoryResolver target = new AppConfigFactoryResolver("slf4net-configurable");
 
             var factory = target.GetFactory();
             Assert.IsNotNull(factory);
-            Assert.IsInstanceOfType(factory, typeof(TestConfigurableLoggerFactory));
+            Assert.IsInstanceOf<TestConfigurableLoggerFactory>(factory);
 
             var cf = (TestConfigurableLoggerFactory)factory;
             Assert.AreEqual("factory configuration data", cf.FactoryData);
@@ -189,14 +160,14 @@ namespace slf4net.Tests
         /// <summary>
         ///A test for AppConfigFactoryResolver Constructor
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void Resolvers_AppConfigFactoryResolver_ConfigurableFactoryNoData()
         {
             AppConfigFactoryResolver target = new AppConfigFactoryResolver("slf4net-configurable-no-data");
 
             var factory = target.GetFactory();
             Assert.IsNotNull(factory);
-            Assert.IsInstanceOfType(factory, typeof(TestConfigurableLoggerFactory));
+            Assert.IsInstanceOf<TestConfigurableLoggerFactory>(factory);
 
             var cf = (TestConfigurableLoggerFactory)factory;
             Assert.AreEqual(null, cf.FactoryData);
@@ -205,12 +176,18 @@ namespace slf4net.Tests
         /// <summary>
         ///A test for AppConfigFactoryResolver Constructor
         ///</summary>
-        [TestMethod()]
-        [ExpectedException(typeof(ConfigurationErrorsException))]
+        [Test]
         public void Resolvers_AppConfigFactoryResolver_ConfigurableFactoryInvalid()
         {
-            AppConfigFactoryResolver target = new AppConfigFactoryResolver("slf4net-configurable-invalid");
-            Assert.Fail();
+            try
+            {
+                AppConfigFactoryResolver target = new AppConfigFactoryResolver("slf4net-configurable-invalid");
+                Assert.Fail();
+            }
+            catch (ConfigurationErrorsException)
+            {
+                // Expected
+            }
         }
 
         public class TestConfigurationSection : ConfigurationSection
