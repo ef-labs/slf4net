@@ -22,15 +22,15 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace slf4net.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class NOPLoggerTest
     {
 
-        [TestMethod]
+        [Test]
         public void NOPLogger_NameTest()
         {
             NOPLogger logger = NOPLogger.Instance;
@@ -41,7 +41,7 @@ namespace slf4net.Tests
             Assert.AreEqual(expected, actual);
         }
 
-        [TestMethod]
+        [Test]
         public void NOPLogger_AllLogMethodsTest()
         {
             NOPLogger logger = NOPLogger.Instance;

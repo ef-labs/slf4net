@@ -51,7 +51,7 @@ namespace slf4net.log4net
         /// by wrapping a log4net logger
         /// </summary>
         /// <param name="logger">The log4net logger to wrap</param>
-        internal Log4netLoggerAdapter(ILog logger)
+        public Log4netLoggerAdapter(ILog logger)
         {
             _logger = logger;
             _callerStackBoundaryDeclaringType = this.GetType();
@@ -62,6 +62,7 @@ namespace slf4net.log4net
 
         #region Debug
 
+        /// <inheritdoc />
         public bool IsDebugEnabled { get { return _logger.IsDebugEnabled; } }
 
         /// <summary>
@@ -142,6 +143,7 @@ namespace slf4net.log4net
 
         #region Trace
 
+        /// <inheritdoc />
         public bool IsTraceEnabled { get { return _logger.Logger.IsEnabledFor(Level.Trace); } }
 
         /// <summary>
@@ -222,6 +224,7 @@ namespace slf4net.log4net
 
         #region Info
 
+        /// <inheritdoc />
         public bool IsInfoEnabled { get { return _logger.IsInfoEnabled; } }
 
         /// <summary>
@@ -302,6 +305,7 @@ namespace slf4net.log4net
 
         #region Warn
 
+        /// <inheritdoc />
         public bool IsWarnEnabled { get { return _logger.IsWarnEnabled; } }
 
         /// <summary>
@@ -382,6 +386,7 @@ namespace slf4net.log4net
 
         #region Error
 
+        /// <inheritdoc />
         public bool IsErrorEnabled { get { return _logger.IsErrorEnabled; } }
 
         /// <summary>

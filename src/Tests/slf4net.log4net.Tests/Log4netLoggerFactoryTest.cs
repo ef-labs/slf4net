@@ -20,166 +20,193 @@
 //THE SOFTWARE.
 
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Xml;
+using log4net.Repository;
+using Moq;
+using NUnit.Framework;
 using slf4net.log4net;
+using slf4net.log4net.Internal;
 
 namespace slf4net.Tests
 {
-    
-    
     /// <summary>
     ///This is a test class for Log4netLoggerFactoryTest and is intended
     ///to contain all Log4netLoggerFactoryTest Unit Tests
     ///</summary>
-    [TestClass()]
+    [TestFixture]
     public class Log4netLoggerFactoryTest
     {
+        private Mock<IXmlConfigurator> _configurator;
+        private TestLog4netLoggerFactory _target;
 
-
-        private TestContext testContextInstance;
-
-        /// <summary>
-        ///Gets or sets the test context which provides
-        ///information about and functionality for the current test run.
-        ///</summary>
-        public TestContext TestContext
+        [SetUp]
+        public void SetUp()
         {
-            get
-            {
-                return testContextInstance;
-            }
-            set
-            {
-                testContextInstance = value;
-            }
+            _configurator = new Mock<IXmlConfigurator>();
+            _target = new TestLog4netLoggerFactory(_configurator.Object);
+            Environment.CurrentDirectory = TestContext.CurrentContext.TestDirectory;
         }
-
-        #region Additional test attributes
-        // 
-        //You can use the following additional attributes as you write your tests:
-        //
-        //Use ClassInitialize to run code before running the first test in the class
-        //[ClassInitialize()]
-        //public static void MyClassInitialize(TestContext testContext)
-        //{
-        //}
-        //
-        //Use ClassCleanup to run code after all tests in a class have run
-        //[ClassCleanup()]
-        //public static void MyClassCleanup()
-        //{
-        //}
-        //
-        //Use TestInitialize to run code before running each test
-        //[TestInitialize()]
-        //public void MyTestInitialize()
-        //{
-        //}
-        //
-        //Use TestCleanup to run code after each test has run
-        //[TestCleanup()]
-        //public void MyTestCleanup()
-        //{
-        //}
-        //
-        #endregion
-
 
         /// <summary>
         ///A test for CreateLogger
         ///</summary>
-        [TestMethod()]
-        [DeploymentItem("slf4net.log4net.dll")]
+        [Test]
         public void Log4netLoggerFactory_CreateLoggerTest()
         {
-            var target = new TestLog4netLoggerFactory();
-            string name = "Test logger name";
-            ILogger actual;
-            
-            actual = target.CreateLogger_ForTest(name);
+            var name = "Test logger name";
+
+            var actual = _target.CreateLogger_ForTest(name);
             Assert.IsNotNull(actual);
-            
+            Assert.IsInstanceOf<Log4netLoggerAdapter>(actual);
         }
 
         /// <summary>
         ///A test for Init
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void Log4netLoggerFactory_Init_NullTest()
         {
-            Log4netLoggerFactory target = new Log4netLoggerFactory();
-            string factoryData;
-
-            factoryData = null;
-            target.Init(factoryData);
-
+            _target.Init(null);
+            _configurator.Verify(mock => mock.Configure(It.IsAny<ILoggerRepository>()), Times.Once);
         }
 
         /// <summary>
         ///A test for Init
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void Log4netLoggerFactory_Init_EmptyTest()
         {
-            Log4netLoggerFactory target = new Log4netLoggerFactory();
-            string factoryData;
-
-            factoryData = string.Empty;
-            target.Init(factoryData);
-
+            _target.Init(string.Empty);
+            _configurator.Verify(mock => mock.Configure(It.IsAny<ILoggerRepository>()), Times.Once);
         }
 
         /// <summary>
         ///A test for Init
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void Log4netLoggerFactory_Init_XmlTest()
         {
-            Log4netLoggerFactory target = new Log4netLoggerFactory();
             string factoryData;
 
             factoryData = "<some-xml></some-xml>";
-            target.Init(factoryData);
-
+            _target.Init(factoryData);
+            _configurator.Verify(mock => mock.Configure(It.IsAny<ILoggerRepository>()), Times.Once);
         }
 
         /// <summary>
         ///A test for Init
         ///</summary>
-        [TestMethod()]
-        [ExpectedException(typeof(System.Xml.XmlException))]
+        [Test]
         public void Log4netLoggerFactory_Init_BadXmlTest()
         {
-            Log4netLoggerFactory target = new Log4netLoggerFactory();
-            string factoryData;
+            var factoryData = "<bad-xml></bad>";
 
-            factoryData = "<bad-xml></bad>";
-            target.Init(factoryData);
-
+            try
+            {
+                _target.Init(factoryData);
+                Assert.Fail();
+            }
+            catch (XmlException)
+            {
+                // Expected
+            }
         }
 
         /// <summary>
         ///A test for Init
         ///</summary>
-        [TestMethod()]
+        [Test]
         public void Log4netLoggerFactory_Init_ValidXmlTest()
         {
-            Log4netLoggerFactory target = new Log4netLoggerFactory();
-            string factoryData;
+            var captures = new List<FileInfo>();
+            _configurator.Setup(x => x.Configure(It.IsAny<ILoggerRepository>(), Capture.In(captures)));
 
-            factoryData = "<factory-data><configFile value=\"log4net.config\"/><watch value=\"true\"/></factory-data>";
-            target.Init(factoryData);
+            var factoryData =
+                "<factory-data><configFile value=\"log4net.config\"/></factory-data>";
+            _target.Init(factoryData);
 
+            _configurator.Verify(mock => mock.Configure(It.IsAny<ILoggerRepository>(), It.IsAny<FileInfo>()),
+                Times.Once);
+
+            Assert.AreEqual(1, captures.Count);
+            Assert.AreEqual(Path.Combine(TestContext.CurrentContext.TestDirectory, "log4net.config"),
+                captures[0].FullName);
+        }
+
+        /// <summary>
+        ///A test for Init
+        ///</summary>
+        [Test]
+        public void Log4netLoggerFactory_Init_ValidXml_Missing_Test()
+        {
+            var factoryData =
+                "<factory-data><configFile value=\"log4net.missing.config\"/></factory-data>";
+            _target.Init(factoryData);
+
+            _configurator.Verify(mock => mock.Configure(It.IsAny<ILoggerRepository>()),
+                Times.Once);
+        }
+
+        /// <summary>
+        ///A test for Init
+        ///</summary>
+        [Test]
+        public void Log4netLoggerFactory_Init_ValidXml_Watch_Test()
+        {
+            var captures = new List<FileInfo>();
+            _configurator.Setup(x => x.ConfigureAndWatch(It.IsAny<ILoggerRepository>(), Capture.In(captures)));
+
+            var factoryData =
+                "<factory-data><configFile value=\"log4net.config\"/><watch value=\"true\"/></factory-data>";
+            _target.Init(factoryData);
+
+            _configurator.Verify(mock => mock.ConfigureAndWatch(It.IsAny<ILoggerRepository>(), It.IsAny<FileInfo>()),
+                Times.Once);
+
+            Assert.AreEqual(1, captures.Count);
+            Assert.AreEqual(Path.Combine(TestContext.CurrentContext.TestDirectory, "log4net.config"),
+                captures[0].FullName);
+        }
+
+        /// <summary>
+        ///A test for Init
+        ///</summary>
+        [Test]
+        public void Log4netLoggerFactory_Init_ValidXml_MultiConfig_Test()
+        {
+            var factoryData =
+                "<factory-data><configFile value=\"log4net.config\"/><configFile value=\"log4net.extra.config\"/></factory-data>";
+            _target.Init(factoryData);
+            _configurator.Verify(mock => mock.Configure(It.IsAny<ILoggerRepository>(), It.IsAny<XmlElement>()),
+                Times.Once);
+        }
+
+        /// <summary>
+        ///A test for Init
+        ///</summary>
+        [Test]
+        public void Log4netLoggerFactory_Init_ValidXml_MultiConfig_Missing_Test()
+        {
+            var factoryData =
+                "<factory-data><configFile value=\"log4net.config\"/><configFile value=\"log4net.missing.config\"/></factory-data>";
+            _target.Init(factoryData);
+            _configurator.Verify(mock => mock.Configure(It.IsAny<ILoggerRepository>(), It.IsAny<FileInfo>()),
+                Times.Once);
         }
 
         private class TestLog4netLoggerFactory : Log4netLoggerFactory
         {
+            public TestLog4netLoggerFactory(IXmlConfigurator configurator) : base(configurator)
+            {
+            }
 
             public ILogger CreateLogger_ForTest(string name)
             {
                 return base.CreateLogger(name);
             }
-
         }
     }
 }

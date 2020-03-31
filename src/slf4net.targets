@@ -1,0 +1,16 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <Authors>EF Education First</Authors>
+    <PackageProjectUrl>https://github.com/ef-labs/slf4net</PackageProjectUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
+
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>slf4net.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+
+  <Target Name="Pack" />
+  <Target Name="Test" />
+
+</Project>

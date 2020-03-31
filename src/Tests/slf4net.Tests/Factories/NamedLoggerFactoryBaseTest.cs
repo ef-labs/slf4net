@@ -20,16 +20,16 @@
 //THE SOFTWARE.
 
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 using slf4net.Factories;
 using slf4net.Moqs.Factories;
 
 namespace slf4net.Tests.Factories
 {
-    [TestClass]
+    [TestFixture]
     public class NamedLoggerFactoryBaseTest
     {
-        [TestMethod]
+        [Test]
         public void Factories_NamedLoggerFactoryBase_GetLogger_ReturnsLoggerWithGivenName()
         {
             NamedLoggerFactoryBase target = new TestNamedLoggerFactory();
@@ -38,7 +38,7 @@ namespace slf4net.Tests.Factories
             Assert.AreEqual("foo", logger.Name);
         }
         
-        [TestMethod]
+        [Test]
         public void Factories_NamedLoggerFactoryBase_GetLogger_With_Null_Uses_Default_Name()
         {
             NamedLoggerFactoryBase target = new TestNamedLoggerFactory();
@@ -47,7 +47,7 @@ namespace slf4net.Tests.Factories
             Assert.AreEqual(string.Empty, logger.Name);
         }
         
-        [TestMethod]
+        [Test]
         public void Factories_NamedLoggerFactoryBase_GetLogger_WithSameName_ReturnsSameInstance()
         {
             NamedLoggerFactoryBase target = new TestNamedLoggerFactory();
@@ -58,7 +58,7 @@ namespace slf4net.Tests.Factories
             Assert.AreSame(logger, loggerTwo);
         }
 
-        [TestMethod]
+        [Test]
         public void Factories_NamedLoggerFactoryBase_GetLogger_WithSameNameCaseInsensitive_ReturnsSameInstance()
         {
             NamedLoggerFactoryBase target = new TestNamedLoggerFactory();
@@ -69,7 +69,7 @@ namespace slf4net.Tests.Factories
             Assert.AreSame(logger, loggerTwo);
         }
 
-        [TestMethod]
+        [Test]
         public void Factories_NamedLoggerFactoryBase_Requesting_Loggers_By_Different_Names_Returns_Different_Instances()
         {
             NamedLoggerFactoryBase target = new TestNamedLoggerFactory();
@@ -80,7 +80,7 @@ namespace slf4net.Tests.Factories
             Assert.AreNotSame(logger, loggerTwo);
         }
 
-        [TestMethod]
+        [Test]
         public void Factories_NamedLoggerFactoryBase_GetLogger_WithDifferentNames_ReturnsLoggerWithGivenNames()
         {
             NamedLoggerFactoryBase target = new TestNamedLoggerFactory();

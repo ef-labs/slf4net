@@ -24,33 +24,46 @@ using System;
 using System.Diagnostics;
 using System.Text;
 
-namespace slf4net
+namespace slf4net.Internal
 {
-    internal static class EventLogHelper
+    /// <summary>
+    /// Console helper class
+    /// </summary>
+    public static class ConsoleHelper
     {
 
-        private static readonly string SLF4NET_SOURCE_NAME = "slf4net";
-        private static readonly string FALLBACK_SOURCE_NAME = "Application";
-
-        public static void WriteEntry(string message, Exception ex)
+        /// <summary>
+        /// Writes details to console out (or error if there's an exception) 
+        /// </summary>
+        /// <param name="message"></param>
+        /// <param name="ex"></param>
+        public static void WriteLine(string message, Exception ex = null)
         {
-            var sb = new StringBuilder();
+            var sb = new StringBuilder()
+                .Append("slf4net: ")
+                .Append(message);
 
             try
             {
-                sb.Append("slf4net: ").Append(message);
                 WriteAppDomainInfo(sb);
                 WriteExceptionInfo(ex, sb);
-
-                var source = GetSource();
-                var entryType = (ex == null ? EventLogEntryType.Warning : EventLogEntryType.Error);
-
-                EventLog.WriteEntry(source, sb.ToString(), entryType);
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
 
-            Debug.WriteLine(sb.ToString());
-            Console.Out.WriteLine(sb.ToString());
+            message = sb.ToString();
+            Debug.WriteLine(message);
+
+            if (ex == null)
+            {
+                Console.Out.WriteLine(message);
+            }
+            else
+            {
+                Console.Error.WriteLine(message);
+            }
         }
 
         private static void WriteAppDomainInfo(StringBuilder sb)
@@ -93,22 +106,6 @@ namespace slf4net
                 ex = ex.InnerException;
             }
 
-        }
-
-        private static string GetSource()
-        {
-            try
-            {
-                if (!EventLog.SourceExists(SLF4NET_SOURCE_NAME))
-                {
-                    EventLog.CreateEventSource(SLF4NET_SOURCE_NAME, null);
-                }
-
-                return SLF4NET_SOURCE_NAME;
-            }
-            catch { }
-
-            return FALLBACK_SOURCE_NAME;
         }
 
     }
