@@ -14,9 +14,12 @@
     <DocumentationFile>bin\Debug\slf4net.xml</DocumentationFile>
   </PropertyGroup>
   
-  <ItemGroup>
-    <Reference Include="System.Configuration" Condition="'$(TargetFramework)' != 'netstandard2.0'" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
+  <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
+    <Reference Include="System.Configuration" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
   </ItemGroup>
 
   <Import Project="$(SolutionDir)\slf4net.targets" />
