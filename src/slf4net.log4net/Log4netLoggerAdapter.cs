@@ -467,6 +467,15 @@ namespace slf4net.log4net
 
         #region Log
 
+        private void CopyContextProperties()
+        {
+            // copy logging context properties to ThreadContext
+            foreach (var keyValue in LoggingContext.Instance.GetProperties())
+            {
+                ThreadContext.Properties[keyValue.Key] = keyValue.Value;
+            }
+        }
+
         private void Log(Level level, IFormatProvider provider, string format, object[] args, Exception exception)
         {
             // Skip if logging is disabled for this level to avoid creating a SystemStringFormat unecessarily
@@ -479,6 +488,8 @@ namespace slf4net.log4net
 
         private void Log(Level level, object message, Exception exception)
         {
+            CopyContextProperties();
+
             // Pass the _callerStackBoundaryDeclaringType to allow correct stack trace logging
             _logger.Logger.Log(_callerStackBoundaryDeclaringType, level, message, exception);
         }

@@ -463,10 +463,21 @@ namespace slf4net.NLog
 
         #region Log
 
+        private void CopyContextProperties()
+        {
+            // copy logging context properties to MappedDiagnosticsContext
+            foreach (var keyValue in LoggingContext.Instance.GetProperties())
+            {
+                MappedDiagnosticsContext.Set(keyValue.Key, keyValue.Value);
+            }
+        }
+
         private void Log(LogLevel level, IFormatProvider provider, string format, object[] args, Exception exception)
         {
             if (_logger.IsEnabled(level))
             {
+                CopyContextProperties();
+
                 var le = new LogEventInfo(level, this.Name, provider, format, args, exception);
                 _logger.Log(_wrapperType, le);
             }
@@ -476,6 +487,8 @@ namespace slf4net.NLog
         {
             if (_logger.IsEnabled(level))
             {
+                CopyContextProperties();
+
                 var le = LogEventInfo.Create(level, this.Name, exception, CultureInfo.InvariantCulture, message);
                 _logger.Log(_wrapperType, le);
             }

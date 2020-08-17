@@ -5,6 +5,11 @@
     <Description>slf4net - The Simple Logging Façade for .NET.</Description>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)'=='netstandard2.0'">
+    <DefineConstants>NETSTANDARD</DefineConstants>
+    <NoWarn>1574</NoWarn>
+  </PropertyGroup>
+
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <DebugSymbols>true</DebugSymbols>
     <DocumentationFile>bin\Release\slf4net.xml</DocumentationFile>
@@ -13,13 +18,18 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DocumentationFile>bin\Debug\slf4net.xml</DocumentationFile>
   </PropertyGroup>
-  
+
   <ItemGroup Condition="'$(TargetFramework)' == 'net40'">
     <Reference Include="System.Configuration" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Threading" Version="4.3.0" />
     <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.7.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Runtime.Remoting" Condition="'$(TargetFramework)' == 'net40'" />
   </ItemGroup>
 
   <Import Project="$(SolutionDir)\slf4net.targets" />

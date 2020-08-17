@@ -16,6 +16,8 @@ _ReSharper*/
 *.vssscc
 *.tmp
 *.userprefs
+.vs/
+.idea/
 
 # NuGet files to exclude
 nuget/
