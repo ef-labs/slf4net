@@ -1,6 +1,10 @@
 Simple Logging Facade for .Net (slf4net)
 ========
 
+[![NuGet](https://img.shields.io/nuget/v/slf4net.svg)](https://www.nuget.org/packages/slf4net) 
+[![NuGet](https://img.shields.io/nuget/dt/slf4net.svg)](https://www.nuget.org/packages/slf4net)
+[![Build Status](https://travis-ci.org/ef-labs/slf4net.svg?branch=develop)](https://travis-ci.org/ef-labs/slf4net)
+
 The slf4net project serves as a light weight abstraction layer for various logging frameworks such as log4net and NLog.  This allows the end user to plug in the desired logging framework at deployment time.
 
 
