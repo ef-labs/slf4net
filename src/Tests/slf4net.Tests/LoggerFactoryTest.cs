@@ -26,12 +26,11 @@ using NUnit.Framework;
 using Moq;
 using slf4net.Factories;
 using slf4net.Factories.Internal;
+using slf4net.Internal;
 using slf4net.Moqs;
 
 namespace slf4net.Tests
 {
-
-
     /// <summary>
     ///This is a test class for LoggerFactoryTest and is intended
     ///to contain all LoggerFactoryTest Unit Tests
@@ -86,7 +85,6 @@ namespace slf4net.Tests
             Thread.Sleep(250);
             actual = LoggerFactory.GetILoggerFactory();
             Assert.IsInstanceOf(MoqFactory.LoggerFactory().Object.GetType(), actual);
-
         }
 
         /// <summary>
@@ -108,7 +106,6 @@ namespace slf4net.Tests
 
             actual = LoggerFactory.GetILoggerFactory();
             Assert.AreEqual(expected, actual);
-
         }
 
         /// <summary>
@@ -127,7 +124,6 @@ namespace slf4net.Tests
 
             actual = LoggerFactory.GetILoggerFactory();
             Assert.AreEqual(expected, actual);
-
         }
 
         /// <summary>
@@ -190,8 +186,68 @@ namespace slf4net.Tests
             IFactoryResolver resolver = MoqFactory.FactoryResolver().Object;
             LoggerFactory.SetFactoryResolver(resolver);
 
+            var provider = LoggerFactory.GetProvider();
+            Assert.That(provider, Is.InstanceOf<BasicSlf4netServiceProvider>());
+
             var factory = LoggerFactory.GetILoggerFactory();
             Assert.IsInstanceOf(resolver.GetFactory().GetType(), factory);
+        }
+
+        /// <summary>
+        ///A test for SetFactoryResolver
+        ///</summary>
+        [Test]
+        public void LoggerFactory_SetFactoryResolver_ServiceProviderTest()
+        {
+            var resolver = Mock.Of<IFactoryResolver>();
+            var factoryMoq = new Mock<ILoggerFactory>();
+            var providerMoq = factoryMoq.As<ISlf4netServiceProvider>();
+            Mock.Get(resolver).Setup(r => r.GetFactory()).Returns(factoryMoq.Object);
+
+            LoggerFactory.SetFactoryResolver(resolver);
+
+            var provider = LoggerFactory.GetProvider();
+            Assert.AreSame(providerMoq.Object, provider);
+        }
+
+        /// <summary>
+        ///A test for SetFactoryResolver
+        ///</summary>
+        [Test]
+        public void LoggerFactory_SetFactoryResolver_NullTest()
+        {
+            LoggerFactory.SetFactoryResolver(null);
+
+            var provider = LoggerFactory.GetProvider();
+            Assert.That(provider, Is.InstanceOf<NOPSlf4netServiceProvider>());
+        }
+
+        /// <summary>
+        ///A test for SetServiceProviderResolver
+        ///</summary>
+        [Test]
+        public void LoggerFactory_SetServiceProviderResolverTest()
+        {
+            var resolver = Mock.Of<ISlf4netServiceProviderResolver>();
+            var expected = Mock.Of<ISlf4netServiceProvider>();
+            Mock.Get(resolver).Setup(r => r.GetProvider()).Returns(expected);
+
+            LoggerFactory.SetServiceProviderResolver(resolver);
+
+            var actual = LoggerFactory.GetProvider();
+            Assert.AreEqual(expected, actual);
+        }
+
+        /// <summary>
+        ///A test for SetServiceProviderResolver
+        ///</summary>
+        [Test]
+        public void LoggerFactory_SetServiceProviderResolver_NullTest()
+        {
+            LoggerFactory.SetServiceProviderResolver(null);
+
+            var provider = LoggerFactory.GetProvider();
+            Assert.That(provider, Is.InstanceOf<NOPSlf4netServiceProvider>());
         }
     }
 }

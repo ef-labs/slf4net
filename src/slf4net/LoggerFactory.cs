@@ -21,8 +21,6 @@
 
 
 using System;
-using slf4net.Factories;
-using slf4net.Factories.Internal;
 using slf4net.Internal;
 using slf4net.Resolvers;
 
@@ -37,7 +35,6 @@ namespace slf4net
     /// </summary>
     public static class LoggerFactory
     {
-
         /// <summary>
         /// LoggerFactory initialization states
         /// </summary>
@@ -47,18 +44,22 @@ namespace slf4net
             /// Logger factory is not initialized
             /// </summary>
             Uninitialized = 0,
+
             /// <summary>
             /// Initialization is currently ongoing
             /// </summary>
             Ongoing = 1,
+
             /// <summary>
             /// Initialization failed
             /// </summary>
             Failed = 2,
+
             /// <summary>
-            /// Intialization succeeded
+            /// Initialization succeeded
             /// </summary>
             Initialized = 3,
+
             /// <summary>
             /// Fell back to a No Operation factory
             /// </summary>
@@ -69,22 +70,31 @@ namespace slf4net
         /// The current initialization state
         /// </summary>
         private static InitializationState _initializationState = InitializationState.Uninitialized;
+
         /// <summary>
         /// A temporary factory that can be used during initialization
         /// </summary>
-        private static SubstituteLoggerFactory _tempFactory = new SubstituteLoggerFactory();
+        private static SubstituteServiceProvider _tempProvider = new SubstituteServiceProvider();
+
         /// <summary>
         /// A fallback factory used when initialization fails
         /// </summary>
-        private static ILoggerFactory _fallbackFactory = NOPLoggerFactory.Instance;
+        private static readonly NOPSlf4netServiceProvider FallbackProvider = NOPSlf4netServiceProvider.Instance;
+
         /// <summary>
         /// Lock object
         /// </summary>
-        private readonly static object _locker = new object();
+        private static readonly object Locker = new object();
+
         /// <summary>
         /// Provides access to the logger factory
         /// </summary>
-        private static IFactoryResolver _factoryResolver;
+        private static ISlf4netServiceProvider _provider;
+
+        /// <summary>
+        /// Resolver to get the slf4net service provider
+        /// </summary>
+        private static ISlf4netServiceProviderResolver _resolver;
 
 
         #region Public Methods
@@ -95,10 +105,24 @@ namespace slf4net
         /// <param name="resolver">The resolver to use.  If null is passed, the <see cref="NOPLoggerFactoryResolver"/> will be used.</param>
         public static void SetFactoryResolver(IFactoryResolver resolver)
         {
-            lock (_locker)
+            if (!(resolver is ISlf4netServiceProviderResolver providerResolver))
+            {
+                providerResolver = resolver == null ? null : new LegacyServiceProviderResolver(resolver);
+            }
+
+            SetServiceProviderResolver(providerResolver);
+        }
+
+        /// <summary>
+        /// Sets the slf4net service provider resolver used to get the <see cref="ISlf4netServiceProvider"/>
+        /// </summary>
+        /// <param name="resolver">The resolver to use.  If null is passed, the <see cref="NOPLoggerFactoryResolver"/> will be used.</param>
+        public static void SetServiceProviderResolver(ISlf4netServiceProviderResolver resolver)
+        {
+            lock (Locker)
             {
                 _initializationState = InitializationState.Uninitialized;
-                _factoryResolver = resolver ?? NOPLoggerFactoryResolver.Instance;
+                _resolver = resolver ?? NOPLoggerFactoryResolver.Instance;
             }
         }
 
@@ -108,11 +132,12 @@ namespace slf4net
         /// </summary>
         public static void Reset()
         {
-            lock (_locker)
+            lock (Locker)
             {
                 _initializationState = InitializationState.Uninitialized;
-                _tempFactory = new SubstituteLoggerFactory();
-                _factoryResolver = null;
+                _tempProvider = new SubstituteServiceProvider();
+                _resolver = null;
+                _provider = null;
             }
         }
 
@@ -123,7 +148,7 @@ namespace slf4net
         /// <returns>logger</returns>
         public static ILogger GetLogger(string name)
         {
-            ILoggerFactory factory = GetILoggerFactory();
+            var factory = GetILoggerFactory();
             return factory.GetLogger(name);
         }
 
@@ -143,9 +168,18 @@ namespace slf4net
         /// </summary>
         public static ILoggerFactory GetILoggerFactory()
         {
+            return GetProvider().GetLoggerFactory();
+        }
+
+        #endregion
+
+        #region Non-Public Methods
+
+        internal static ISlf4netServiceProvider GetProvider()
+        {
             if (_initializationState == InitializationState.Uninitialized)
             {
-                lock (_locker)
+                lock (Locker)
                 {
                     if (_initializationState == InitializationState.Uninitialized)
                     {
@@ -158,49 +192,43 @@ namespace slf4net
             switch (_initializationState)
             {
                 case InitializationState.Initialized:
-                    return _factoryResolver.GetFactory();
+                    return _provider;
 
                 case InitializationState.NOP_Fallback:
-                    return _fallbackFactory;
+                    return FallbackProvider;
 
                 case InitializationState.Ongoing:
-                    return _tempFactory;
+                    return _tempProvider;
 
                 case InitializationState.Failed:
                     // Not currently used, safer to use fallback instance
-                    throw new InvalidOperationException("The slf4net LoggerFactory failed to initialize.  Check the event log for details.");
+                    throw new InvalidOperationException(
+                        "The slf4net LoggerFactory failed to initialize.  Check the event log for details.");
 
                 default:
                     // Should never reach this code...
-                    throw new InvalidOperationException("_initializationState " + _initializationState + " is not recognized.");
+                    throw new InvalidOperationException(
+                        $"_initializationState {_initializationState} is not recognized.");
             }
         }
-
-        #endregion
-
-        #region Non-Public Methods
 
         private static void PerformInitialization()
         {
             try
             {
-                if (_factoryResolver == null)
-                {
-                    _factoryResolver = new AppConfigFactoryResolver();
-                }
+                var resolver = _resolver ?? new AppConfigFactoryResolver();
+                var provider = resolver.GetProvider();
 
-                var factory = _factoryResolver.GetFactory();
-
-                if (factory == null)
+                if (provider == null)
                 {
                     _initializationState = InitializationState.NOP_Fallback;
-                    EmitFactoryResolverError(_factoryResolver);
+                    EmitFactoryResolverError(resolver);
                     return;
                 }
 
+                _provider = provider;
                 _initializationState = InitializationState.Initialized;
                 EmitSubstituteLoggerWarning();
-
             }
             catch (Exception ex)
             {
@@ -208,38 +236,41 @@ namespace slf4net
 
                 try
                 {
-                    ConsoleHelper.WriteLine("Error initializing LoggerFactory.  Defaulting to no-operation (NOP) logger implementation.", ex);
+                    ConsoleHelper.WriteLine(
+                        "Error initializing LoggerFactory.  Defaulting to no-operation (NOP) logger implementation.",
+                        ex);
                 }
-                catch { }
+                catch
+                {
+                    // Squash
+                }
             }
-
         }
 
-        private static void EmitFactoryResolverError(IFactoryResolver resolver)
+        private static void EmitFactoryResolverError(ISlf4netServiceProviderResolver resolver)
         {
             var msg = "The factory resolver " + resolver.GetType().Name
-                + " returned null from GetFactory().  The fallback no operation logger factory will be used instead.";
+                                              + " returned null from GetProvider().  The fallback no operation logger factory will be used instead.";
 
             ConsoleHelper.WriteLine(msg);
         }
 
         private static void EmitSubstituteLoggerWarning()
         {
-            var loggerNameList = _tempFactory.GetLoggerNameList();
+            var loggerNameList = _tempProvider.GetLoggerFactory().GetLoggerNameList();
 
             if (loggerNameList.Length == 0)
             {
                 return;
             }
 
-            var msg = "The following loggers will not work because the were created during the default configuration phase of the underlying logging system: "
+            var msg =
+                "The following loggers will not work because the were created during the default configuration phase of the underlying logging system: "
                 + string.Join(", ", loggerNameList);
 
             ConsoleHelper.WriteLine(msg);
-
         }
 
         #endregion
-
     }
 }

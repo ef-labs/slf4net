@@ -23,6 +23,7 @@
 using System;
 using System.Configuration;
 using NUnit.Framework;
+using slf4net.Internal;
 using slf4net.Moqs.Factories;
 using slf4net.Resolvers;
 
@@ -41,7 +42,10 @@ namespace slf4net.Tests
         [Test]
         public void Resolvers_AppConfigFactoryResolver_MissingSection()
         {
-            AppConfigFactoryResolver target = new AppConfigFactoryResolver();
+            var target = new AppConfigFactoryResolver();
+
+            var provider = target.GetProvider();
+            Assert.IsNull(provider);
 
             var factory = target.GetFactory();
             Assert.IsNull(factory);
@@ -70,10 +74,12 @@ namespace slf4net.Tests
         [Test]
         public void Resolvers_AppConfigFactoryResolver_AltSectionName1()
         {
-            AppConfigFactoryResolver target = new AppConfigFactoryResolver("slf4net-alt-name1");
+            var target = new AppConfigFactoryResolver("slf4net-alt-name1");
+
+            var provider = target.GetProvider();
+            Assert.IsInstanceOf<BasicSlf4netServiceProvider>(provider);
 
             var factory = target.GetFactory();
-            Assert.IsNotNull(factory);
             Assert.IsInstanceOf<TestLoggerFactory>(factory);
         }
 
@@ -83,10 +89,12 @@ namespace slf4net.Tests
         [Test]
         public void Resolvers_AppConfigFactoryResolver_AltSectionName2()
         {
-            AppConfigFactoryResolver target = new AppConfigFactoryResolver("slf4net-alt-name2");
+            var target = new AppConfigFactoryResolver("slf4net-alt-name2");
+
+            var provider = target.GetProvider();
+            Assert.IsInstanceOf<BasicSlf4netServiceProvider>(provider);
 
             var factory = target.GetFactory();
-            Assert.IsNotNull(factory);
             Assert.IsInstanceOf<TestNamedLoggerFactory>(factory);
         }
 
@@ -98,7 +106,7 @@ namespace slf4net.Tests
         {
             try
             {
-                AppConfigFactoryResolver target = new AppConfigFactoryResolver("slf4net-invalid");
+                var target = new AppConfigFactoryResolver("slf4net-invalid");
                 Assert.Fail();
             }
             catch (TypeLoadException)
@@ -115,7 +123,7 @@ namespace slf4net.Tests
         {
             try
             {
-                AppConfigFactoryResolver target = new AppConfigFactoryResolver("slf4net-missing");
+                var target = new AppConfigFactoryResolver("slf4net-missing");
                 Assert.Fail();
             }
             catch (TypeLoadException)
@@ -132,7 +140,7 @@ namespace slf4net.Tests
         {
             try
             {
-                AppConfigFactoryResolver target = new AppConfigFactoryResolver("slf4net-wrong-factory-type");
+                var target = new AppConfigFactoryResolver("slf4net-wrong-factory-type");
                 Assert.Fail();
             }
             catch (InvalidCastException)
@@ -153,7 +161,7 @@ namespace slf4net.Tests
             Assert.IsNotNull(factory);
             Assert.IsInstanceOf<TestConfigurableLoggerFactory>(factory);
 
-            var cf = (TestConfigurableLoggerFactory)factory;
+            var cf = (TestConfigurableLoggerFactory) factory;
             Assert.AreEqual("factory configuration data", cf.FactoryData);
         }
 
@@ -169,7 +177,7 @@ namespace slf4net.Tests
             Assert.IsNotNull(factory);
             Assert.IsInstanceOf<TestConfigurableLoggerFactory>(factory);
 
-            var cf = (TestConfigurableLoggerFactory)factory;
+            var cf = (TestConfigurableLoggerFactory) factory;
             Assert.AreEqual(null, cf.FactoryData);
         }
 
@@ -193,6 +201,5 @@ namespace slf4net.Tests
         public class TestConfigurationSection : ConfigurationSection
         {
         }
-
     }
 }

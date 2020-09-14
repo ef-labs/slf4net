@@ -45,14 +45,22 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BasicSlf4netServiceProviderTest.cs" />
     <Compile Include="EventLogHelperTest.cs" />
     <Compile Include="Factories\Internal\SubstituteLoggerFactoryTest.cs" />
+    <Compile Include="GDCTest.cs" />
+    <Compile Include="Internal\NOPMdcAdapterTest.cs" />
+    <Compile Include="Internal\NOPSlf4netServiceProviderTest.cs" />
+    <Compile Include="Internal\SubstituteServiceProviderTest.cs" />
     <Compile Include="LoggerFactoryTest.cs" />
+    <Compile Include="MDLCTest.cs" />
+    <Compile Include="MDCTest.cs" />
     <Compile Include="NamedLoggerBaseTest.cs" />
     <Compile Include="Resolvers\AppConfigFactoryResolverTest.cs" />
     <Compile Include="ExploratoryTester.cs" />
     <Compile Include="Factories\NamedLoggerFactoryBaseTest.cs" />
     <Compile Include="Factories\NOPLoggerFactoryTest.cs" />
+    <Compile Include="Resolvers\LegacyServiceProviderResolverTest.cs" />
     <Compile Include="Resolvers\NOPLoggerFactoryResolverTest.cs" />
     <Compile Include="NOPLoggerTest.cs" />
     <Compile Include="Configuration\SlfConfigurationSectionTest.cs" />

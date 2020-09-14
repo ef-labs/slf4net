@@ -21,6 +21,7 @@
 
 
 using slf4net.Factories;
+using slf4net.Internal;
 
 namespace slf4net.Resolvers
 {
@@ -28,28 +29,15 @@ namespace slf4net.Resolvers
     /// A resolver that always returns a <see cref="NOPLoggerFactory"/>,
     /// which in turn creates a <see cref="NOPLogger"/> instance.
     /// </summary>
-    public class NOPLoggerFactoryResolver : IFactoryResolver
+    public class NOPLoggerFactoryResolver : IFactoryResolver, ISlf4netServiceProviderResolver
     {
-        /// <summary>
-        /// The logger factory instance.
-        /// </summary>
-        private readonly ILoggerFactory _factory = NOPLoggerFactory.Instance;
-
         #region Singleton
-
-        /// <summary>
-        /// Singleton instance.
-        /// </summary>
-        private static readonly NOPLoggerFactoryResolver _instance = new NOPLoggerFactoryResolver();
 
         /// <summary>
         /// Provides access to the singleton instance of
         /// the class.
         /// </summary>
-        public static NOPLoggerFactoryResolver Instance
-        {
-            get { return _instance; }
-        }
+        public static NOPLoggerFactoryResolver Instance { get; } = new NOPLoggerFactoryResolver();
 
         /// <summary>
         /// Private constructor. A reference to the Singleton
@@ -64,19 +52,18 @@ namespace slf4net.Resolvers
 
         #region IFactoryResolver Implementation
 
-        /// <summary>
-        /// Determines a factory which cab create an
-        /// <see cref="ILogger"/> instance based on a
-        /// request for a named logger.
-        /// </summary>
-        /// <returns>A factory which in turn is responsible for creating
-        /// a given <see cref="ILogger"/> implementation.</returns>
+        /// <inheritdoc />
         public ILoggerFactory GetFactory()
         {
-            return _factory;
+            return GetProvider().GetLoggerFactory();
+        }
+
+        /// <inheritdoc />
+        public ISlf4netServiceProvider GetProvider()
+        {
+            return NOPSlf4netServiceProvider.Instance;
         }
 
         #endregion
-
     }
 }
