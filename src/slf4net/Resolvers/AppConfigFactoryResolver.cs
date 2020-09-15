@@ -1,28 +1,30 @@
-﻿//The MIT License (MIT)
-//Copyright © 2012 Englishtown <opensource@englishtown.com>
-
-//Permission is hereby granted, free of charge, to any person obtaining a copy
-//of this software and associated documentation files (the “Software”), to deal
-//in the Software without restriction, including without limitation the rights
-//to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//copies of the Software, and to permit persons to whom the Software is
-//furnished to do so, subject to the following conditions:
-
-//The above copyright notice and this permission notice shall be included in
-//all copies or substantial portions of the Software.
-
-//THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-//IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-//FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-//AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-//LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-//OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-//THE SOFTWARE.
+﻿// The MIT License (MIT)
+//
+// Copyright © 2020 EF Learning Labs <labs.oss@EF.com>
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the “Software”), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in
+// all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+// THE SOFTWARE.
 
 
 using System.Configuration;
 using slf4net.Configuration;
 using slf4net.Factories;
+using slf4net.Internal;
 
 namespace slf4net.Resolvers
 {
@@ -31,16 +33,15 @@ namespace slf4net.Resolvers
     /// on settings taken from the application's default configuration
     /// file (<c>App.config</c> or <c>Web.config</c>).
     /// </summary>
-    public class AppConfigFactoryResolver : IFactoryResolver
+    public class AppConfigFactoryResolver : IFactoryResolver, ISlf4netServiceProviderResolver
     {
-
         /// <summary>
         /// The name of the SLF configuration section
         /// </summary>
         public const string CONFIG_SECTION_NAME = "slf4net";
 
-        private string _sectionName;
-        private ILoggerFactory _factory;
+        private readonly string _sectionName;
+        private ISlf4netServiceProvider _provider;
 
         #region Constructors
 
@@ -48,7 +49,8 @@ namespace slf4net.Resolvers
         /// Default constructor using the standard configuration section name <see cref="AppConfigFactoryResolver.CONFIG_SECTION_NAME"/>
         /// </summary>
         public AppConfigFactoryResolver() : this(CONFIG_SECTION_NAME)
-        { }
+        {
+        }
 
         /// <summary>
         /// Constructor where a custom configuration section name is used.
@@ -62,15 +64,24 @@ namespace slf4net.Resolvers
 
         #endregion
 
-        #region ILoggerFactory Implementation
+        #region ISlf4netServiceProviderResolver/IFactoryResolver Implementation
 
         /// <summary>
-        /// Returns the <see cref="ILoggerFactory"/> instance in use.
+        /// Returns the <see cref="ISlf4netServiceProvider"/> instance to use.
+        /// </summary>
+        /// <returns></returns>
+        public ISlf4netServiceProvider GetProvider()
+        {
+            return _provider;
+        }
+
+        /// <summary>
+        /// Returns the <see cref="ILoggerFactory"/> instance from the slf4net service provider.
         /// </summary>
         /// <returns></returns>
         public ILoggerFactory GetFactory()
         {
-            return _factory;
+            return GetProvider()?.GetLoggerFactory();
         }
 
         #endregion
@@ -82,7 +93,7 @@ namespace slf4net.Resolvers
         /// </summary>
         protected virtual void LoadConfiguration()
         {
-            object configSection = ConfigurationManager.GetSection(_sectionName);
+            var configSection = ConfigurationManager.GetSection(_sectionName);
 
             // Return if no section exists
             if (configSection == null)
@@ -90,7 +101,16 @@ namespace slf4net.Resolvers
                 return;
             }
 
-            _factory = ReadConfiguration(configSection as SlfConfigurationSection);
+            var factory = ReadConfiguration(configSection as SlfConfigurationSection);
+
+            if (factory is ISlf4netServiceProvider provider)
+            {
+                _provider = provider;
+            }
+            else
+            {
+                _provider = new BasicSlf4netServiceProvider(factory, NOPMdcAdapter.Instance);
+            }
         }
 
         /// <summary>
@@ -102,7 +122,8 @@ namespace slf4net.Resolvers
             // Throw exception if section is not a SlfConfigurationSection
             if (configSection == null)
             {
-                var msg = string.Format("Configuration section named {0} must be type {1}.", _sectionName, typeof(SlfConfigurationSection).FullName);
+                var msg =
+                    $"Configuration section named {_sectionName} must be type {typeof(SlfConfigurationSection).FullName}.";
                 throw new ConfigurationErrorsException(msg);
             }
 
@@ -120,11 +141,10 @@ namespace slf4net.Resolvers
         /// <returns>Factory instance.</returns>
         private ILoggerFactory CreateFactoryInstance(FactoryConfigurationElement factoryConfiguration)
         {
-            ILoggerFactory factory = ActivatorUtils.Instantiate<ILoggerFactory>(factoryConfiguration.Type);
-            IConfigurableLoggerFactory cf = factory as IConfigurableLoggerFactory;
+            var factory = ActivatorUtils.Instantiate<ILoggerFactory>(factoryConfiguration.Type);
 
             // If the factory is configurable, invoke its Init method
-            if (cf != null)
+            if (factory is IConfigurableLoggerFactory cf)
             {
                 cf.Init(factoryConfiguration.FactoryData);
             }
@@ -132,7 +152,8 @@ namespace slf4net.Resolvers
             {
                 if (!string.IsNullOrEmpty(factoryConfiguration.FactoryData))
                 {
-                    throw new ConfigurationErrorsException("Factory " + factoryConfiguration.Type + " does not implement IConfigurableLoggerFactory.");
+                    throw new ConfigurationErrorsException("Factory " + factoryConfiguration.Type +
+                                                           " does not implement IConfigurableLoggerFactory.");
                 }
             }
 
@@ -140,6 +161,5 @@ namespace slf4net.Resolvers
         }
 
         #endregion
-
     }
 }
