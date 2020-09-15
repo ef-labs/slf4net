@@ -4,6 +4,8 @@ Simple Logging Facade for .Net (slf4net)
 [![NuGet](https://img.shields.io/nuget/v/slf4net.svg)](https://www.nuget.org/packages/slf4net) 
 [![NuGet](https://img.shields.io/nuget/dt/slf4net.svg)](https://www.nuget.org/packages/slf4net)
 [![Build Status](https://travis-ci.org/ef-labs/slf4net.svg?branch=develop)](https://travis-ci.org/ef-labs/slf4net)
+[![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](https://ef-labs.mit-license.org)
+
 
 The slf4net project serves as a light weight abstraction layer for various logging frameworks such as log4net and NLog.  This allows the end user to plug in the desired logging framework at deployment time.
 
@@ -20,7 +22,7 @@ When deploying your application, choose either the slf4net.log4net or slf4net.NL
 
 Configuration
 -------------
-See the [configuration wiki page](https://github.com/englishtown/slf4net/wiki/Configuration).
+See the [configuration wiki page](https://github.com/ef-labs/slf4net/wiki/Configuration).
 
 
 Getting started
@@ -53,7 +55,7 @@ namespace slf4net.Samples
 
 License terms
 -------------
-slf4net is published under the [MIT license](http://englishtown.mit-license.org).
+slf4net is published under the [MIT license](https://ef-labs.mit-license.org).
 
 
 Building

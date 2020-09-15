@@ -4,6 +4,7 @@
     <Authors>EF Education First</Authors>
     <PackageProjectUrl>https://github.com/ef-labs/slf4net</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <Copyright>Copyright © 2020 EF Learning Labs</Copyright>
     <AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
 
     <SignAssembly>true</SignAssembly>

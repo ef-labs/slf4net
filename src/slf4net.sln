@@ -24,6 +24,7 @@ ProjectSection(SolutionItems) = preProject
 	..\nuget-push.sh = ..\nuget-push.sh
 	..\README.md = ..\README.md
 	slf4net.targets = slf4net.targets
+	..\LICENSE = ..\LICENSE
 EndProjectSection
 EndProject
 Global

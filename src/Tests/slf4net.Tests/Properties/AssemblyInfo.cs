@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("slf4net.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Scott Logic Ltd")]
+[assembly: AssemblyCompany("EF Education First")]
 [assembly: AssemblyProduct("slf4net.Tests")]
-[assembly: AssemblyCopyright("Copyright © Scott Logic Ltd 2012")]
+[assembly: AssemblyCopyright("Copyright © 2020 EF Learning Labs")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
