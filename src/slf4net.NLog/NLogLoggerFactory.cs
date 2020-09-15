@@ -31,8 +31,10 @@ namespace slf4net.NLog
     /// that use the NLog framework as the underlying logging
     /// mechanism.
     /// </summary>
-    public class NLogLoggerFactory : NamedLoggerFactoryBase
+    public class NLogLoggerFactory : NamedLoggerFactoryBase, ISlf4netServiceProvider
     {
+        private readonly NLogMdcAdapter _mdcAdapter = new NLogMdcAdapter();
+
         /// <inheritdoc />
         protected override ILogger CreateLogger(string name)
         {
@@ -40,5 +42,16 @@ namespace slf4net.NLog
             return new NLogLoggerAdapter(nlogLogger);
         }
 
+        /// <inheritdoc />
+        public ILoggerFactory GetLoggerFactory()
+        {
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IMdcAdapter GetMdcAdapter()
+        {
+            return _mdcAdapter;
+        }
     }
 }

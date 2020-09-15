@@ -32,11 +32,12 @@ namespace slf4net.log4net
     /// that use the log4net framework as the underlying logging
     /// mechanism.
     /// </summary>
-    public class Log4netLoggerFactory : NamedLoggerFactoryBase, IConfigurableLoggerFactory
+    public class Log4netLoggerFactory : NamedLoggerFactoryBase, IConfigurableLoggerFactory, ISlf4netServiceProvider
     {
         private readonly IXmlConfigurator _configurator;
-        private static bool _isInitialized = false;
-        private static readonly object _locker = new object();
+        private readonly Log4netMdcAdapter _mdcAdapter = new Log4netMdcAdapter();
+        private static bool _isInitialized;
+        private static readonly object Locker = new object();
 
         /// <summary>
         /// The slf4net repository name
@@ -70,7 +71,7 @@ namespace slf4net.log4net
         /// <inheritdoc />
         public void Init(string factoryData)
         {
-            lock (_locker)
+            lock (Locker)
             {
                 var helper = new XmlConfiguratorHelper(factoryData, _configurator);
                 helper.Configure();
@@ -82,7 +83,7 @@ namespace slf4net.log4net
         {
             if (!_isInitialized)
             {
-                lock (_locker)
+                lock (Locker)
                 {
                     if (!_isInitialized)
                     {
@@ -90,6 +91,18 @@ namespace slf4net.log4net
                     }
                 }
             }
+        }
+
+        /// <inheritdoc />
+        public ILoggerFactory GetLoggerFactory()
+        {
+            return this;
+        }
+
+        /// <inheritdoc />
+        public IMdcAdapter GetMdcAdapter()
+        {
+            return _mdcAdapter;
         }
     }
 }

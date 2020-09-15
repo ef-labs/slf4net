@@ -26,98 +26,98 @@ using System.Diagnostics;
 using System.Reflection;
 
 namespace slf4net.Tests
-{ 
-  /// <summary>
-  /// A class that performs exploratory tests on classes  
-  /// </summary>
-  public static class ExploratoryTester
-  {
+{
     /// <summary>
-    /// Performs exploratory testing on an ILogger instance. This
-    /// test for robustness against null values being passed for
-    /// all method arguments
+    /// A class that performs exploratory tests on classes  
     /// </summary>
-    /// <param name="logger"></param>
-    /// <returns>A list of failures</returns>
-    public static List<string> TestILogger(ILogger logger)
+    public static class ExploratoryTester
     {
-      List<string> failures = new List<string>();
-
-      // obtain all the methods
-      Type iLoggerType = typeof(ILogger);
-      MethodInfo[] methods = iLoggerType.GetMethods();
-
-      foreach (MethodInfo method in methods)
-      {
-        // skip the Log method, it does not accept null (should it?)
-        if (method.Name == "Log")
-          continue;
-
-        string result = TestILoggerMethod(logger, method);
-        if (result != null)
+        /// <summary>
+        /// Performs exploratory testing on an ILogger instance. This
+        /// test for robustness against null values being passed for
+        /// all method arguments
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <returns>A list of failures</returns>
+        public static List<string> TestILogger(ILogger logger)
         {
-          failures.Add(result);
-        }
-      }
+            List<string> failures = new List<string>();
 
-      return failures;
+            // obtain all the methods
+            Type iLoggerType = typeof(ILogger);
+            MethodInfo[] methods = iLoggerType.GetMethods();
+
+            foreach (MethodInfo method in methods)
+            {
+                // skip the Log method, it does not accept null (should it?)
+                if (method.Name == "Log")
+                    continue;
+
+                string result = TestILoggerMethod(logger, method);
+                if (result != null)
+                {
+                    failures.Add(result);
+                }
+            }
+
+            return failures;
+        }
+
+        /// <summary>
+        /// Creates an argument list suitabel for invocation of the 
+        /// given ILogger method
+        /// </summary>
+        /// <param name="method"></param>
+        /// <returns></returns>
+        public static List<object> CreateArgumentList(MethodInfo method)
+        {
+            // construct a null argument list
+            List<object> argumentList = new List<object>();
+            foreach (ParameterInfo parameter in method.GetParameters())
+            {
+                // currenlty the xxxFormat methods delegate to String.Format
+                // for formatting. This method will throw an exception if either
+                // the format string or argument list is null. Therefore, we 
+                // ensure that this does not happen here.
+                if (parameter.Name == "format")
+                {
+                    argumentList.Add("");
+                }
+                else if (parameter.Name == "args")
+                {
+                    argumentList.Add(new object[] {""});
+                }
+                else
+                {
+                    argumentList.Add(null);
+                }
+            }
+
+            return argumentList;
+        }
+
+        /// <summary>
+        /// Tests an individual ILogger method
+        /// </summary>
+        /// <returns>Details of the failure - if one occured.
+        /// Or null otherwise</returns>
+        private static string TestILoggerMethod(ILogger logger, MethodInfo method)
+        {
+            List<object> argumentList = CreateArgumentList(method);
+
+            // invoke the method and ensure that it does not throw an expcetion.
+            try
+            {
+                Debug.WriteLine("Invoking method: " + method.ToString());
+                method.Invoke(logger, argumentList.ToArray());
+            }
+            catch (Exception e)
+            {
+                return string.Format("The method {0} failed with exception {1}",
+                    method, e.InnerException);
+            }
+
+            return null;
+        }
     }
-
-    /// <summary>
-    /// Creates an argument list suitabel for invocation of the 
-    /// given ILogger method
-    /// </summary>
-    /// <param name="method"></param>
-    /// <returns></returns>
-    public static List<object> CreateArgumentList(MethodInfo method)
-    {
-      // construct a null argument list
-      List<object> argumentList = new List<object>();
-      foreach (ParameterInfo parameter in method.GetParameters())
-      {
-        // currenlty the xxxFormat methods delegate to String.Format
-        // for formatting. This method will throw an exception if either
-        // the format string or argument list is null. Therefore, we 
-        // ensure that this does not happen here.
-        if (parameter.Name == "format")
-        {
-          argumentList.Add("");
-        }
-        else if (parameter.Name == "args")
-        {
-          argumentList.Add(new object[] {""});
-        }
-        else
-        {
-          argumentList.Add(null);
-        }
-      }
-
-      return argumentList;
-    }
-
-    /// <summary>
-    /// Tests an individual ILogger method
-    /// </summary>
-    /// <returns>Details of the failure - if one occured.
-    /// Or null otherwise</returns>
-    private static string TestILoggerMethod(ILogger logger, MethodInfo method)
-    {
-      List<object> argumentList = CreateArgumentList(method);
-
-      // invoke the method and ensure that it does not throw an expcetion.
-      try
-      {
-        Debug.WriteLine("Invoking method: " + method.ToString());
-        method.Invoke(logger, argumentList.ToArray());
-      }
-      catch (Exception e)
-      {
-        return string.Format("The method {0} failed with exception {1}",
-          method, e.InnerException);
-      }
-
-      return null;
-    }
-  }
 }
